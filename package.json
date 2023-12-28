@@ -1,0 +1,34 @@
+{
+  "private": true,
+  "version": "0.1.0",
+  "name": "eorc20-signer",
+  "description": "EORC-20 signer.",
+  "homepage": "https://github.com/pinax-network/eorc20-signer",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "eorc20-signer": "dist/bin/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "start": "tsc && node ./dist/bin/cli.js",
+    "test": "bun test",
+    "posttest": "tsc --noEmit",
+    "prepublishOnly": "tsc"
+  },
+  "dependencies": {
+    "@clickhouse/client": "latest",
+    "dotenv": "latest",
+    "log-update": "latest",
+    "prom-client": "latest",
+    "viem": "latest"
+  },
+  "devDependencies": {
+    "bun-types": "latest",
+    "typescript": "latest"
+  }
+}
