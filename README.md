@@ -1,60 +1,32 @@
-# `EORC-20` Indexer
+# `EORC-20` Signer
 
-> Allows to index `EORC-20` inscription operations from EOS EVM blocks.
+> Allows to sign `EORC-20` inscription operations.
 
 ## Install
 
 ```bash
-$ npm -g install eorc20
+$ gh repo clone pinax-network/eorc20-signer
+$ cd eorc20-signer
+$ npm install
 ```
+
+## Requirements
+
+- [ClickHouse DB](https://clickhouse.com/)
+- [EORC-20 indexer](https://github.com/pinax-network/eorc20-indexer)
 
 ## Usage
 
 ```bash
-$ eorc20 --eos-start-block 345827395 --ticker eoss
+$ npm start
 ```
-
-Outputs the following JSONL files to disk:
-- `eorc20.jsonl` (EORC-20 operations)
-- `blocks.jsonl` (EOS EVM blocks)
-
-### Get API key
-
-- https://app.pinax.network/
 
 **.env**
+
 ```env
-# Get API key @ app.pinax.network
-SUBSTREAMS_API_TOKEN="<API KEY>"
-EOS_START_BLOCK=345827395
+# Clickhouse DB
+USERNAME=default
+PASSWORD=''
+HOST=http://localhost:8123
+PAUSED=false
 ```
-
-### API requirement
-
-- chain state
-  - last EOS EVM block
-  - total EORC-20 inscriptions
-- Token Holdings
-  - POST `/balance`
-    - address
-    - limit
-    - offset
-  - POST `/balance/history`
-    - address
-    - limit
-    - offset
-    - tick
-- mimetype
-  - application/json
-  - text/plain
-- content URI
-  - sha256
-
-### Indexing rules
-
-#### `mint`
-
-- `to` should be defined as null address `0x0000000000000000000000000000000000000000`
-- `from` is the `owner` of the `EORC-20` token
-- `amt` should match exactly `lim` of the `EORC-20` token according to `deploy` operation
-  - must be a positive `BigInt`
