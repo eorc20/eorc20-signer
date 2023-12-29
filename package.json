@@ -24,6 +24,7 @@
     "@clickhouse/client": "latest",
     "dotenv": "latest",
     "log-update": "latest",
+    "p-queue": "latest",
     "prom-client": "latest",
     "viem": "latest"
   },
