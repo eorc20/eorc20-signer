@@ -27,7 +27,7 @@ export async function handleLastTransfer(tick: string) {
     // error (7) - invalid block ID (mostly caused by micro forks)
     if (!await isFinalBlock(native_block_id, native_block_number)) {
         console.error(`❌️️️️️️️ native block not final = ${native_block_id}\n`);
-        await error(id, 7);
+        await error(id, 10);
         await sleep(500);
         queue.add(() => handleConfirmation(tick, id));
         return;
