@@ -7,6 +7,7 @@ import { approve, error } from "./queries.js";
 import logUpdate from 'log-update';
 import { queue } from "./config.js";
 import { handleConfirmation } from "./handleConfirmation.js";
+import { isFinalBlock } from "./isFinalBlock.js";
 
 export async function handleLastTransfer(tick: string) {
     // get last pending transfer
@@ -18,12 +19,23 @@ export async function handleLastTransfer(tick: string) {
         return;
     }
     // Values from pending Transfer
-    const { id, from, to, block_number } = pendingTransfer;
+    const { id, from, to, block_number, native_block_number, native_block_id } = pendingTransfer;
     const amt = Number(pendingTransfer.amt);
-    console.log({pendingTransfer})
+    console.log("handleLastTransfer", { pendingTransfer })
+
+    // wait for block to be confirmed
+    // error (7) - invalid block ID (mostly caused by micro forks)
+    if (!await isFinalBlock(native_block_id, native_block_number)) {
+        console.error(`❌️️️️️️️ native block not final = ${native_block_id}\n`);
+        await error(id, 7);
+        await sleep(500);
+        queue.add(() => handleConfirmation(tick, id));
+        return;
+    }
+    console.error(`✅ native block final = ${native_block_id}\n`);
 
     // get available balance
-    let availableBalance = await getTokensByAddress(from, tick, block_number);
+    const availableBalance = await getTokensByAddress(from, tick, block_number);
     if ( availableBalance === null ) {
         console.error(`❌ failed to get balance for ${from}`);
         process.exit(1);
@@ -31,7 +43,7 @@ export async function handleLastTransfer(tick: string) {
 
     // compute remaining balance after transfer
     const balance = availableBalance - amt;
-    console.log({from, amt, availableBalance, balance})
+    console.log("handleLastTransfer", {from, amt, availableBalance, balance})
 
     // error (5) - cannot transfer to self
     if ( from === to ) {
